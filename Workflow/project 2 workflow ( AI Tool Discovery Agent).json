@@ -1,0 +1,283 @@
+{
+  "name": "project 2 workflow ( AI Tool Discovery Agent)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.futuretools.io/news/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -32
+      ],
+      "id": "d2180f40-eb5a-4090-8048-2d68caf6eac3",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "40ef20d6-d629-4409-aa03-9ff9da4c800a",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI tools analyst.\n\nAnalyze the article.\n\nTitle:\n{{$json.title}}\n\nDescription:\n{{$json.contentSnippet}}\n\nReturn ONLY valid JSON.\n\n{\n  \"tool_name\":\"\",\n  \"website\":\"\",\n  \"category\":\"\",\n  \"pricing\":\"\",\n  \"use_case\":\"\",\n  \"rating\":7,\n  \"summary\":\"\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        48,
+        -32
+      ],
+      "id": "73254454-e5fb-481a-9101-7580f49d73bd",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        176,
+        128
+      ],
+      "id": "fc1380b9-5f08-49c4-aad3-bad7c3bbcd9b",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "w1UvwyYeColH4Byy",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n\n  const clean = item.json.text\n    .replace(/```json/g, '')\n    .replace(/```/g, '')\n    .trim();\n\n  return {\n    json: JSON.parse(clean)\n  };\n\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        16
+      ],
+      "id": "bf5f6755-194f-4375-bcfb-6905c8403d68",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "b24cdd07-a540-45eb-bd29-df790c0bf326",
+          "mode": "list",
+          "cachedResultName": "AI Tool Discovery Database",
+          "cachedResultUrl": "https://app.notion.com/p/b24cdd07a54045ebbd29df790c0bf326"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Tool Name|title",
+              "title": "={{$json.tool_name}}"
+            },
+            {
+              "key": "Website|url",
+              "urlValue": "={{$json.website}}"
+            },
+            {
+              "key": "Category|select",
+              "selectValue": "={{$json.category}}"
+            },
+            {
+              "key": "Pricing|select",
+              "selectValue": "={{$json.pricing}}\n"
+            },
+            {
+              "key": "Use Case|rich_text",
+              "textContent": "={{$json.use_case}}"
+            },
+            {
+              "key": "Rating|number",
+              "numberValue": "={{Number($json.rating)}}"
+            },
+            {
+              "key": "Summary|rich_text",
+              "textContent": "={{$json.summary}}\n"
+            },
+            {
+              "key": "Source|rich_text",
+              "textContent": "RSS Feed"
+            },
+            {
+              "key": "Date Added|date",
+              "includeTime": "={{$now}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        16
+      ],
+      "id": "dc1ee1b9-e425-4efe-9dcf-e4b3fce591a0",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "iPBSduvciJHM9bEc",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "shettysrajan0509@gmail.com",
+        "subject": "=🚀 New AI Tool: {{$json.property_tool_name}}",
+        "message": "=<h2>🤖 New AI Tool Discovered</h2>\n\n<p><b>Tool Name:</b> {{$json.property_tool_name}}</p>\n\n<p><b>Category:</b> {{$json.property_category}}</p>\n\n<p><b>Pricing:</b> {{$json.property_pricing}}</p>\n\n<p><b>Use Case:</b> {{$json.property_use_case}}</p>\n\n<p><b>Rating:</b> ⭐ {{$json.property_rating}}/10</p>\n\n<p><b>Summary:</b></p>\n<p>{{$json.property_summary}}</p>\n\n<p>\n<b>Website:</b><br>\n<a href=\"{{$json.property_website}}\">\n{{$json.property_website}}\n</a>\n</p>\n\n<hr>\n\n<p>\n📅 AI Tool Discovery Agent<br>\nGenerated automatically by n8n\n</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        16
+      ],
+      "id": "56d4ab68-aa56-444b-b055-3782d07ae871",
+      "name": "Send a message",
+      "webhookId": "596fbbe6-aa10-402f-bad2-f0e624eb25a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dkKwjlvmsAQG8CId",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        -16
+      ],
+      "id": "718fc5e6-9ca9-47fa-b5aa-dbb868bb0077",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ba59954a-840d-464f-8bee-994c32c05afb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d5cc37f8c22eb4f43504df7ff26f6a367af0dd308ab67b5d730fe2e3cd903938"
+  },
+  "nodeGroups": [],
+  "id": "nVNzNpnsPlE5uyFl",
+  "tags": []
+}

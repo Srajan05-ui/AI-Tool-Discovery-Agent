@@ -1,0 +1,103 @@
+{
+  "name": "Backend api project",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "tools",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "71bf0671-37a3-48cb-8936-8a2b9eac50a9",
+      "name": "Webhook",
+      "webhookId": "3824f345-a0a1-43b3-8b7c-e8f632cfec50"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "b24cdd07-a540-45eb-bd29-df790c0bf326",
+          "mode": "list",
+          "cachedResultName": "AI Tool Discovery Database",
+          "cachedResultUrl": "https://app.notion.com/p/b24cdd07a54045ebbd29df790c0bf326"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "eea30fcc-abc4-4b7c-8bdf-b39a95209879",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "iPBSduvciJHM9bEc",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$input.all()}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1224da93-c767-45fa-b4d7-46b2baf2a566",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4e150b04-1b06-4e82-8337-7afd95f8c2f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d5cc37f8c22eb4f43504df7ff26f6a367af0dd308ab67b5d730fe2e3cd903938"
+  },
+  "nodeGroups": [],
+  "id": "fcpImxZoXoM29Bc0",
+  "tags": []
+}

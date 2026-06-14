@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tool Discovery Agent</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>🤖 AI Tool Discovery Agent</h1>
+    <p>Discover and Track AI Tools Automatically</p>
+  </header>
+
+  <section class="stats">
+
+    <div class="card stat">
+      <h2 id="totalTools">0</h2>
+      <p>Total Tools</p>
+    </div>
+
+    <div class="card stat">
+      <h2 id="totalCategories">0</h2>
+      <p>Categories</p>
+    </div>
+
+  </section>
+
+  <section class="filters">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search AI Tool..."
+    >
+
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+    </select>
+
+  </section>
+
+  <section id="toolsContainer"></section>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
